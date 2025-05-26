@@ -1,0 +1,15 @@
+body {
+	display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 40vh;
+    flex-direction: column;
+	
+    background-color: #3b9cc97c;
+    font-family: "Inter", sans-serif;
+}
+
+.main-heading {
+    color: #333;
+    font-size: 2em;
+}
