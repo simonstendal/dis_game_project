@@ -1,4 +1,4 @@
-from database import db_connection
+from database import get_connection
 
 class Game:
     def __init__(self, id, name):
