@@ -1,32 +1,76 @@
 import psycopg2
 import os
+import pandas as pd
+from models.movie import create_movie
 
-# Try to get from system enviroment variable
-# Set your Postgres user and password as second arguments of these two next function calls
-user = os.environ.get('PGUSER', 'postgres')
-password = os.environ.get('PGPASSWORD', 'game_project')
-host = os.environ.get('HOST', '127.0.0.1')
+user = os.getenv("PGPUSER")
+password = os.getenv("PGPASSWORD")
+host = os.getenv("DB_HOST")
+dbname = os.getenv("DB_NAME")
 
-def db_connection():
-    db = "dbname='game_project' user=" + user + " host=" + host + " password =" + password
-    conn = psycopg2.connect(db)
+connectionstring = f"dbname={dbname} user={user} password={password} host={host}"
 
-    return conn
+timemap = {'h' : 60, 'm' : 1}
 
-def init_db():
-    conn = db_connection()
-    cur = conn.cursor()
-    cur.execute('''CREATE TABLE IF NOT EXISTS categories (id SERIAL PRIMARY KEY, category_name TEXT NOT NULL UNIQUE)''')
-    cur.execute('''CREATE TABLE IF NOT EXISTS todos (id SERIAL PRIMARY KEY, todo_text TEXT NOT NULL UNIQUE, category_id INTEGER NOT NULL, FOREIGN KEY(category_id) REFERENCES categories(id))''')
-    conn.commit()
+def get_connection():
+    try:
+        return psycopg2.connect(connectionstring)
+    except Exception as e:
+        print(f"Error connecting to the database: {e}")
 
-    categories = ['DIS', 'House chores']
-    for category in categories:
-        cur.execute('INSERT INTO categories (category_name) VALUES (%s) ON CONFLICT DO NOTHING', (category,))
+def convert_time_to_minutes(time_str) -> int | None:
+    if not time_str or time_str == "Not Available":
+        return None
+    time_parts = time_str.split()
+    total_minutes = 0
+    for part in time_parts:
+        if part[-1] == 'h':
+            total_minutes += int(part[:-1]) * timemap['h']
+        elif part[-1] == 'm':
+            total_minutes += int(part[:-1]) * timemap['m']
+    return total_minutes
 
-    todos = [('Assignment 1', 'DIS'), ('Groceries', 'House chores'), ('Assignment 2', 'DIS'), ('Project', 'DIS')]
-    for (todo, category) in todos:
-        cur.execute('INSERT INTO todos (todo_text, category_id) VALUES (%s, (SELECT id FROM categories WHERE category_name = %s)) ON CONFLICT DO NOTHING', (todo, category))
+def read_data_and_create_movies():
+    data = pd.read_csv("DB/IMDB Top 250 Movies.csv", delimiter=",")
+    for _, row in data.iterrows():
+        row['budget'] = row['budget'].replace("$", "").replace(",", "")
+        row['box_office'] = row['box_office'].replace("$", "").replace(",", "")
+        row['casts'] = row['casts'].split(",")
+        row['directors'] = row['directors'].split(",")
+        row['writers'] = row['writers'].split(",")
+        row['genre'] = row['genre'].split(",")
+        row['run_time'] = convert_time_to_minutes(row['run_time'])
+        movie = create_movie(row)
 
-    conn.commit()
-    conn.close()
+        fields = (f"ranking, title, release_year, rating, age_rating, run_time, "
+                  f"tagline, budget, box_office")
+
+        sql =  (f"INSERT INTO movies ({fields}) "
+                f"VALUES (%(ranking)s, %(title)s, %(release_year)s, %(rating)s, %(age_rating)s, %(run_time)s, %(tagline)s, %(budget)s, %(box_office)s);")
+
+        values = {
+            'ranking': movie.ranking,
+            'title': movie.title,
+            'tagline': movie.tagline,
+            'release_year': movie.release_date,
+            'age_rating': movie.classification.value if movie.classification else None,
+            'run_time': movie.duration,
+            'rating': movie.rating,
+            'budget': movie.budget,
+            'box_office': movie.box_office
+        }
+
+        conn = get_connection()
+        if conn is None:
+            print("Failed to connect to the database.")
+            return
+        
+        with conn.cursor() as cur:
+            try:
+                cur.execute(sql, values)
+                conn.commit()
+            except Exception as e:
+                print(f"Error inserting movie: {e}")
+                conn.rollback()
+
+    

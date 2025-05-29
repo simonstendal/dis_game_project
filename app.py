@@ -1,8 +1,8 @@
 from flask import Flask
-from database import init_db
+from database import read_data_and_create_movies
 from controllers import game, startpage
 
-init_db()
+read_data_and_create_movies()
 
 app = Flask(__name__)
 
