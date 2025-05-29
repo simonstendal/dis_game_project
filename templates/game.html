@@ -5,17 +5,19 @@
 	<link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap" rel="stylesheet">
 </head>
 <body>
-	<a href="{{ url_for('startpage.startpage') }}" class="register-link">Go back to startpage.</a>
+	<a href="{{ url_for('startpage.startpage') }}" class="register-link">Restart game.</a>
 	
+	{%for hint in hints%}
+		<p>{{hint}}</p>
+	{%endfor%}
+
+	<p>{{random_movie.title}}</p>
 	<form method="POST" action="/game">
-		<label for="movies">Which movie is it?:</label>
-		<select name="movies" id="movies">
-			<option value="m1">Movie1</option>
-			<option value="m2">Movie2</option>
-			<option value="m3">Movie3</option>
-			<option value="m4">Movie4</option>
-		</select>
-		<br><br>
-		<input type="submit" value="Answer" class="btn">
+		<input list="movie-titles" name="movie_guess" placeholder="Type movie title">
+		<datalist id="movie-titles">
+			{% for movie in movies %}
+				<option value="{{ movie.title }}">
+			{% endfor %}
+		</datalist>
 	</form>
 </body>
