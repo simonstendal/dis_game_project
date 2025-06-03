@@ -10,4 +10,5 @@ def startpage():
     movies = get_all_movies()
     session['random_movie'] = movies[random_num]
     session['counter'] = 1
+    session['rand_int'] = random.randint(0,4)
     return render_template("startpage.html")

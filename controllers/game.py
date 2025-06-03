@@ -11,6 +11,7 @@ def game():
     if 'random_movie' not in session:
         session['random_movie'] = movies[random_num]
         session['counter'] = 1
+        session['rand_int']= random.randint(0,4)
     result = False
     if request.method == "POST":
         user_guess = request.form['movie_guess']
@@ -19,4 +20,4 @@ def game():
             return redirect(url_for("win.win"))
         else:
             session['counter'] += 1
-    return render_template('game.html', movies = movies, random_movie = session['random_movie'], result = result, counter = session['counter'], hints = movie_hint(session['random_movie'], session['counter']))
+    return render_template('game.html', movies = movies, random_movie = session['random_movie'], result = result, counter = session['counter'], hints = movie_hint(session['random_movie'], session['counter'], session['rand_int']))
