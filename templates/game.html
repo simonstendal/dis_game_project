@@ -8,10 +8,9 @@
 	<a href="{{ url_for('startpage.startpage') }}" class="register-link">Restart game.</a>
 	
 	{%for hint in hints%}
-		<p>{{hint}}</p>
+		<p class="hint">{{hint}}</p>
 	{%endfor%}
-
-	<p>{{random_movie.title}}</p>
+	{% if counter < 7 %}
 	<form method="POST" action="/game">
 		<input list="movie-titles" name="movie_guess" placeholder="Type movie title">
 		<datalist id="movie-titles">
@@ -20,4 +19,8 @@
 			{% endfor %}
 		</datalist>
 	</form>
+	{% else %}
+		<a href="{{ url_for('startpage.startpage') }}" class="btn btn-primary">Too bad! Start a new game!</a>
+	{% endif %}
+	
 </body>

@@ -1,7 +1,6 @@
 from database import get_connection
 import models.movie as mov
 import re
-import random
 
 class Game:
     def __init__(self, id, name):
@@ -20,12 +19,13 @@ def get_all_movies():
                        'box_office': row[1],
                        'ranking': row[2],
                        'tagline': row[3]})  # or {'title': row[0]}
+    movies.sort(key=lambda m: m['title'].lower()) # sorted such that the in-game form will be alphabetical. 
     return movies
 
 def movie_hint(movie:mov.movie, amount, rand_int: int):
-    hint1 = f"The genre of the movie is"
-    hint2 = f"The year the movie was made is:"
-    hint3 = f"The movie had a budget of  {movie['box_office']}"
+    hint1 = f"It is a (INSERT-GENRE)-movie"
+    hint2 = f"The year the movie was made is (INSERT-YEAR):"
+    hint3 = f"The movie had a budget of ${movie['box_office']}"
     hint4 = f"The movie is ranked top {movie['ranking']}/250 on IMDB's all time movies"
     hint5 = f"The tagline of the movie is: {movie['tagline']}"
     hint6 = analyse_title(movie['title'], rand_int)
@@ -46,7 +46,11 @@ def analyse_title(moive_title: str, rand_int: int):
         insert = ""
     else:
         insert = "not"
-    string_array = [f"The movie does {insert} have 3 or more e's", f"it does {insert} contain \"the\"", f"it does {insert} contain special characters", "it is {insert} only one word", "it is {insert} \"Forrest Gump\"."]
+    string_array = [f"The movie does {insert} have 3 or more e's",
+                    f"The movie does {insert} contain \"the\"",
+                    f"The movie does {insert} contain special characters",
+                    f"The movie is {insert} only one word",
+                    f"The movie is {insert} \"Forrest Gump\"."]
     return string_array[rand_int]
 
     

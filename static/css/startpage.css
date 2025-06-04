@@ -11,5 +11,12 @@ body {
 
 .main-heading {
     color: #333;
-    font-size: 2em;
+    font-size: 4em;
+	font-weight: bold;
+}
+
+.hint {
+	color: #331111;
+    font-size: 1em;
+	font-weight: bold;
 }
