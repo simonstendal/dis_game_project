@@ -124,19 +124,19 @@ def remove_char_from_budget_and_box_office(value: str) -> Optional[int]:
 
 def create_movie(row) -> movie:
     return movie(
-        ranking=row[0],
-        title=row[1],
-        release_date=row[2],
-        rating=row[3],
-        genre= create_genre(row[4]),
-        classification=create_classification(row[5]),
-        duration=row[6],
-        tagline=row[7][:255],
-        budget=remove_char_from_budget_and_box_office(row[8]),
-        box_office=remove_char_from_budget_and_box_office(row[9]),
-        cast=row[10],
-        director=row[11],
-        writer=row[12]
+        ranking=row['rank'],
+        title=row['name'],
+        release_date=row['year'],
+        rating=row['rating'],
+        genre= create_genre(row['genre']),
+        classification=create_classification(row['certificate']),
+        duration=row['run_time'],
+        tagline=row['tagline'][:255],
+        budget=remove_char_from_budget_and_box_office(row['budget']),
+        box_office=remove_char_from_budget_and_box_office(row['box_office']),
+        cast=row['casts'],
+        director=row['directors'],
+        writer=row['writers']
     )
 
 
