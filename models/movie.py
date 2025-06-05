@@ -27,6 +27,12 @@ class classification(Enum):
     
 
 class Genre(Enum):
+    def __new__(cls, number, label):
+        obj = object.__new__(cls)
+        obj._value_ = number
+        obj.label = label
+        return obj
+	
     Action     = (1, "Action")
     Adventure  = (2, "Adventure")
     Animation  = (3, "Animation")

@@ -10,21 +10,32 @@ class Game:
 def get_all_movies():
     conn = get_connection()
     cur = conn.cursor()
-    cur.execute('SELECT title, box_office, ranking, tagline FROM movies')
+    cur.execute('SELECT id, title, box_office, ranking, tagline, release_year FROM movies')
     all_movies = cur.fetchall()
-
+	
     movies = []
     for row in all_movies:
-        movies.append({'title': row[0],
-                       'box_office': row[1],
-                       'ranking': row[2],
-                       'tagline': row[3]})  # or {'title': row[0]}
-    movies.sort(key=lambda m: m['title'].lower()) # sorted such that the in-game form will be alphabetical. 
+        movies.append({'id': row[0],
+            		   'title': row[1],
+                       'box_office': row[2],
+                       'ranking': row[3],
+                       'tagline': row[4],
+                       'release_year': row[5]})  # or {'title': row[0]}
+    movies.sort(key=lambda m: m['title'].lower()) 
     return movies
 
+def get_genres(movie_id):
+    conn = get_connection()
+    cur = conn.cursor()
+    cur.execute('SELECT * FROM genres WHERE movie_id = %s', (movie_id,))
+    genres = cur.fetchall()
+    return genres
+
 def movie_hint(movie:mov.movie, amount, rand_int: int):
-    hint1 = f"It is a (INSERT-GENRE)-movie"
-    hint2 = f"The year the movie was made is (INSERT-YEAR):"
+    genres = get_genres(movie['id'])
+    genre = mov.Genre(genres[0][1])
+    hint1 = f"It is a {genre}-movie"
+    hint2 = f"The year the movie was made is {movie['release_year']}:"
     hint3 = f"The movie had a budget of ${movie['box_office']}"
     hint4 = f"The movie is ranked top {movie['ranking']}/250 on IMDB's all time movies"
     hint5 = f"The tagline of the movie is: {movie['tagline']}"
