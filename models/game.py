@@ -21,7 +21,7 @@ def get_all_movies():
                        'box_office': row[2],
                        'ranking': row[3],
                        'tagline': row[4],
-                       'release_year': row[5]})  # or {'title': row[0]}
+                       'release_year': row[5]})
     movies.sort(key=lambda m: m['title'].lower()) 
     return movies
 
@@ -65,39 +65,3 @@ def analyse_title(moive_title: str, rand_int: int):
                     f"The movie is {insert} only one word",
                     f"The movie is {insert} \"Forrest Gump\"."]
     return string_array[rand_int]
-
-    
-
-
-# "ranking=row[0],
-#         title=row[1],
-#         release_date=row[2],
-#         rating=row[3],
-#         genre= create_genre(row[4]),
-#         classification=create_classification(row[5]),
-#         duration=row[6],
-#         tagline=row[7],
-#         budget=row[8] if row[8] != "Not Available" else None,
-#         box_office=row[9] if row[9] != "Not Available" else None,
-#         cast=row[10],
-#         director=row[11],
-#         writer=row[12]"
-#def list_categories():
-#    conn = db_connection()
-#    cur = conn.cursor()
-#    cur.execute('SELECT id, category_name FROM categories')
-#    db_categories = cur.fetchall()
-
-#    categories = []
-#    for db_category in db_categories:
-#        categories.append(Category(db_category[0], db_category[1]))
-#    conn.close()
-#    return categories
-
-#def insert_category(category_name):
-#    conn = db_connection()
-#    cur = conn.cursor()
-#    cur.execute('INSERT INTO categories (category_name) VALUES (%s) ON CONFLICT DO NOTHING', (category_name,))
-#    conn.commit()
-#    cur.close()
-#    conn.close()
