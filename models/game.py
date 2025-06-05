@@ -1,6 +1,7 @@
 from database import get_connection
 import models.movie as mov
 import re
+import random as rnd
 
 class Game:
     def __init__(self, id, name):
@@ -33,7 +34,8 @@ def get_genres(movie_id):
 
 def movie_hint(movie:mov.movie, amount, rand_int: int):
     genres = get_genres(movie['id'])
-    genre = mov.Genre(genres[0][1])
+    rnd_genre = rnd.randint(0,len(genres))
+    genre = mov.Genre(genres[rnd_genre][1])
     hint1 = f"It is a {genre}-movie"
     hint2 = f"The year the movie was made is {movie['release_year']}:"
     hint3 = f"The movie had a budget of ${movie['box_office']}"
