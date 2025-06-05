@@ -13,7 +13,7 @@ CREATE TABLE IF NOT EXISTS movies (
 
 CREATE TABLE IF NOT EXISTS genres (
     movie_id INT NOT NULL,
-    genre VARCHAR(50) NOT NULL,
+    genre int CHECK (genre >= 1 AND genre <= 21) NOT NULL,
     PRIMARY KEY (movie_id, genre),
     FOREIGN KEY (movie_id) REFERENCES movies(id) ON DELETE CASCADE
 );

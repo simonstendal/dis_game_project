@@ -1,5 +1,6 @@
 from enum import Enum
 from typing import Optional
+import re
 
 class classification(Enum):
     G           = (1, "G")
@@ -105,6 +106,13 @@ def create_classification(classification_str: str) -> classification | None:
         return classification.PG13
     raise ValueError(f"Unknown classification: {classification_str}")
 
+def remove_char_from_budget_and_box_office(value: str) -> Optional[int]:
+    if value == "Not Available":
+        return None
+    value = re.sub(r"\D", '', value)
+    return int(value) 
+
+
 def create_movie(row) -> movie:
     return movie(
         ranking=row[0],
@@ -114,9 +122,9 @@ def create_movie(row) -> movie:
         genre= create_genre(row[4]),
         classification=create_classification(row[5]),
         duration=row[6],
-        tagline=row[7],
-        budget=row[8] if row[8] != "Not Available" else None,
-        box_office=row[9] if row[9] != "Not Available" else None,
+        tagline=row[7][:255],
+        budget=remove_char_from_budget_and_box_office(row[8]),
+        box_office=remove_char_from_budget_and_box_office(row[9]),
         cast=row[10],
         director=row[11],
         writer=row[12]
