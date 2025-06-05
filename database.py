@@ -33,8 +33,8 @@ def convert_time_to_minutes(time_str) -> int | None:
 def read_data_and_create_movies():
     data = pd.read_csv("DB/IMDB Top 250 Movies.csv", delimiter=",")
     for _, row in data.iterrows():
-        row['budget'] = row['budget'].replace("$", "").replace(",", "")
-        row['box_office'] = row['box_office'].replace("$", "").replace(",", "")
+        row['budget'] = row['budget']
+        row['box_office'] = row['box_office']
         row['casts'] = row['casts'].split(",")
         row['directors'] = row['directors'].split(",")
         row['writers'] = row['writers'].split(",")
@@ -42,13 +42,14 @@ def read_data_and_create_movies():
         row['run_time'] = convert_time_to_minutes(row['run_time'])
         movie = create_movie(row)
 
-        fields = (f"ranking, title, release_year, rating, age_rating, run_time, "
+        fields_movies = (f"ranking, title, release_year, rating, age_rating, run_time, "
                   f"tagline, budget, box_office")
 
-        sql =  (f"INSERT INTO movies ({fields}) "
-                f"VALUES (%(ranking)s, %(title)s, %(release_year)s, %(rating)s, %(age_rating)s, %(run_time)s, %(tagline)s, %(budget)s, %(box_office)s);")
+        sql_movies =  (f"INSERT INTO movies ({fields_movies}) "
+                f"VALUES (%(ranking)s, %(title)s, %(release_year)s, %(rating)s, %(age_rating)s, %(run_time)s, %(tagline)s, %(budget)s, %(box_office)s)" 
+                f"RETURNING id;")
 
-        values = {
+        values_movies = {
             'ranking': movie.ranking,
             'title': movie.title,
             'tagline': movie.tagline,
@@ -60,6 +61,8 @@ def read_data_and_create_movies():
             'box_office': movie.box_office
         }
 
+        sql_genres = "INSERT INTO genres (movie_id, genre) VALUES (%(movie_id)s, %(genre)s);"
+
         conn = get_connection()
         if conn is None:
             print("Failed to connect to the database.")
@@ -67,7 +70,12 @@ def read_data_and_create_movies():
         
         with conn.cursor() as cur:
             try:
-                cur.execute(sql, values)
+                cur.execute(sql_movies, values_movies)
+                movie_id = cur.fetchone()
+                movie_id = movie_id[0] if movie_id else None
+                for genre in movie.genre:
+                    cur.execute(sql_genres, {'movie_id': movie_id, 'genre': genre.value})
+                cur.execute
                 conn.commit()
             except Exception as e:
                 print(f"Error inserting movie: {e}")
