@@ -34,7 +34,7 @@ def get_genres(movie_id):
 
 def movie_hint(movie:mov.movie, amount, rand_int: int):
     genres = get_genres(movie['id'])
-    rnd_genre = rnd.randint(0,len(genres))
+    rnd_genre = rnd.randint(0,len(genres)-1)
     genre = mov.Genre(genres[rnd_genre][1])
     hint1 = f"It is a {genre}-movie"
     hint2 = f"The year the movie was made is {movie['release_year']}:"
