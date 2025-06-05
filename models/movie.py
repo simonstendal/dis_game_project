@@ -25,7 +25,10 @@ class classification(Enum):
     def __str__(self):
         return self.label
     
-
+class StaffRole(Enum):
+    Director   = 1
+    Writer     = 2
+    Cast       = 3
 class Genre(Enum):
     Action     = (1, "Action")
     Adventure  = (2, "Adventure")

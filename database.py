@@ -1,7 +1,7 @@
 import psycopg2
 import os
 import pandas as pd
-from models.movie import create_movie
+from models.movie import create_movie, StaffRole 
 
 user = os.getenv("PGPUSER")
 password = os.getenv("PGPASSWORD")
@@ -46,7 +46,8 @@ def read_data_and_create_movies():
                   f"tagline, budget, box_office")
 
         sql_movies =  (f"INSERT INTO movies ({fields_movies}) "
-                f"VALUES (%(ranking)s, %(title)s, %(release_year)s, %(rating)s, %(age_rating)s, %(run_time)s, %(tagline)s, %(budget)s, %(box_office)s)" 
+                f"VALUES (%(ranking)s, %(title)s, %(release_year)s, %(rating)s," 
+                f"%(age_rating)s, %(run_time)s, %(tagline)s, %(budget)s, %(box_office)s)"
                 f"RETURNING id;")
 
         values_movies = {
@@ -75,10 +76,24 @@ def read_data_and_create_movies():
                 movie_id = movie_id[0] if movie_id else None
                 for genre in movie.genre:
                     cur.execute(sql_genres, {'movie_id': movie_id, 'genre': genre.value})
-                cur.execute
+                for director in movie.director:
+                    cur.execute("INSERT INTO staff (staff_name) VALUES (%(dir)s) RETURNING id;", {'dir': director})
+                    staff_id = cur.fetchone()
+                    cur.execute("INSERT INTO movie_staff (movie_id, staff_id, staff_role) VALUES (%(Mid)s, %(Sid)s, %(role)s);", 
+                        {'Mid': movie_id, 'Sid': staff_id, 'role': StaffRole.Director.value}) 
+                for cast in movie.cast:
+                    cur.execute("INSERT INTO staff (staff_name) VALUES (%(cast)s) RETURNING id;", {'cast': cast})
+                    staff_id = cur.fetchone()
+                    cur.execute("INSERT INTO movie_staff (movie_id, staff_id, staff_role) VALUES (%(Mid)s, %(Sid)s, %(role)s);", 
+                        {'Mid': movie_id, 'Sid': staff_id, 'role': StaffRole.Cast.value})
+                for writer in movie.writer:
+                    cur.execute("INSERT INTO staff (staff_name) VALUES (%(writer)s) RETURNING id;", {'writer': writer})
+                    staff_id = cur.fetchone()
+                    cur.execute("INSERT INTO movie_staff (movie_id, staff_id, staff_role) VALUES (%(Mid)s, %(Sid)s, %(role)s);", 
+                        {'Mid': movie_id, 'Sid': staff_id, 'role': StaffRole.Cast.value})
                 conn.commit()
             except Exception as e:
-                print(f"Error inserting movie: {e}")
+                print(f"Error inserting movie:  {e}")
                 conn.rollback()
 
     
