@@ -6,7 +6,9 @@
 		<link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap" rel="stylesheet">
 	</head>
 	<body>
-		<p class=".main-heading">You are a Movie-Guesser champion. You got it in {{counter}} tries</p>
-		<a href="{{ url_for('startpage.startpage') }}" class="btn btn-primary">Restart game</a>
+		<img class="trophy" src="{{ url_for('static', filename='trophy.png')}}">
+		<p> You are right, the movie was {{session['random_movie']['title']}}.</p>
+		<p class=".main-heading">You are a Movie-Guesser champion!!! You got it in {{counter}} tries</p>
+		<a href="{{ url_for('startpage.startpage') }}" class="btn btn-primary">Start a new game</a>
 	</body>
 </html>

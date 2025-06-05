@@ -37,7 +37,7 @@ def movie_hint(movie:mov.movie, amount, rand_int: int):
     rnd_genre = rnd.randint(0,len(genres)-1)
     genre = mov.Genre(genres[rnd_genre][1])
     hint1 = f"It is a {genre}-movie"
-    hint2 = f"The year the movie was made is {movie['release_year']}:"
+    hint2 = f"The movie was made in {movie['release_year']}:"
     hint3 = f"The movie had a budget of ${movie['box_office']}"
     hint4 = f"The movie is ranked top {movie['ranking']}/250 on IMDB's all time movies"
     hint5 = f"The tagline of the movie is: {movie['tagline']}"

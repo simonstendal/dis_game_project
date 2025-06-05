@@ -7,6 +7,7 @@
 <body>
 	<a href="{{ url_for('startpage.startpage') }}" class="register-link">Restart game.</a>
 	
+	<p class="main-heading">Guess the movie from the top-rated 250 IMDB movies!</p>
 	{%for hint in hints%}
 		<p class="hint">{{hint}}</p>
 	{%endfor%}
@@ -21,6 +22,5 @@
 	</form>
 	{% else %}
 		<a href="{{ url_for('startpage.startpage') }}" class="btn btn-primary">Too bad! Start a new game!</a>
-	{% endif %}
-	
+	{% endif %}	
 </body>
